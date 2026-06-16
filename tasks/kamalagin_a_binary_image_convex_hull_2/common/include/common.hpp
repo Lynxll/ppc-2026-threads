@@ -8,7 +8,7 @@
 
 #include "task/include/task.hpp"
 
-namespace kamalagin_a_binary_image_convex_hull {
+namespace kamalagin_a_binary_image_convex_hull_2 {
 
 struct Point {
   int x = 0;
@@ -42,4 +42,4 @@ using OutType = HullList;
 using TestType = std::tuple<int, std::string>;
 using BaseTask = ppc::task::Task<InType, OutType>;
 
-}  // namespace kamalagin_a_binary_image_convex_hull
+}  // namespace kamalagin_a_binary_image_convex_hull_2

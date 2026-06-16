@@ -1,4 +1,4 @@
-#include "kamalagin_a_binary_image_convex_hull/seq/include/ops_seq.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/tbb/include/ops_tbb.hpp"
 
 #include <algorithm>
 #include <array>
@@ -7,9 +7,11 @@
 #include <utility>
 #include <vector>
 
-#include "kamalagin_a_binary_image_convex_hull/common/include/common.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/common/include/common.hpp"
+#include "oneapi/tbb/blocked_range.h"
+#include "oneapi/tbb/parallel_for.h"
 
-namespace kamalagin_a_binary_image_convex_hull {
+namespace kamalagin_a_binary_image_convex_hull_2 {
 
 namespace {
 
@@ -117,37 +119,46 @@ void FloodFillComponent(const BinaryImage &img, int start_row, int start_col, st
   }
 }
 
-void RunBinaryImageConvexHullSeq(const BinaryImage &img, HullList &hulls) {
-  hulls.clear();
+void CollectComponents(const BinaryImage &img, std::vector<std::vector<Point>> &components) {
+  components.clear();
   const int rows = img.rows;
   const int cols = img.cols;
   const size_t total = static_cast<size_t>(rows) * static_cast<size_t>(cols);
   std::vector<int> label(total, 0);
-  std::vector<Point> component_pts;
-  component_pts.reserve(total);
   for (int row = 0; row < rows; ++row) {
     for (int col = 0; col < cols; ++col) {
       const size_t idx = img.Index(row, col);
       if (img.data[idx] == 0 || label[idx] != 0) {
         continue;
       }
-      FloodFillComponent(img, row, col, label, component_pts);
-      Hull hull;
-      GrahamHull(component_pts, hull);
-      hulls.push_back(std::move(hull));
+      components.emplace_back();
+      FloodFillComponent(img, row, col, label, components.back());
     }
   }
 }
 
+void RunBinaryImageConvexHullTbb(const BinaryImage &img, HullList &hulls) {
+  hulls.clear();
+  std::vector<std::vector<Point>> components;
+  CollectComponents(img, components);
+  const size_t count = components.size();
+  hulls.resize(count);
+  tbb::parallel_for(tbb::blocked_range<size_t>(0, count), [&](const tbb::blocked_range<size_t> &range) {
+    for (size_t i = range.begin(); i != range.end(); ++i) {
+      GrahamHull(components[i], hulls[i]);
+    }
+  });
+}
+
 }  // namespace
 
-KamalaginABinaryImageConvexHullSEQ::KamalaginABinaryImageConvexHullSEQ(const InType &in) {
+KamalaginABinaryImageConvexHull2TBB::KamalaginABinaryImageConvexHull2TBB(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   GetInput() = in;
   GetOutput() = HullList{};
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::ValidationImpl() {
+bool KamalaginABinaryImageConvexHull2TBB::ValidationImpl() {
   const auto &img = GetInput();
   if (img.rows < 0 || img.cols < 0) {
     return false;
@@ -161,18 +172,18 @@ bool KamalaginABinaryImageConvexHullSEQ::ValidationImpl() {
   return (static_cast<size_t>(img.rows) * static_cast<size_t>(img.cols)) == img.data.size();
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::PreProcessingImpl() {
+bool KamalaginABinaryImageConvexHull2TBB::PreProcessingImpl() {
   GetOutput().clear();
   return true;
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::RunImpl() {
-  RunBinaryImageConvexHullSeq(GetInput(), GetOutput());
+bool KamalaginABinaryImageConvexHull2TBB::RunImpl() {
+  RunBinaryImageConvexHullTbb(GetInput(), GetOutput());
   return true;
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::PostProcessingImpl() {
+bool KamalaginABinaryImageConvexHull2TBB::PostProcessingImpl() {
   return true;
 }
 
-}  // namespace kamalagin_a_binary_image_convex_hull
+}  // namespace kamalagin_a_binary_image_convex_hull_2

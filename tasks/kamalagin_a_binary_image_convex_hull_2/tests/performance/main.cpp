@@ -4,16 +4,16 @@
 #include <cstddef>
 #include <vector>
 
-#include "kamalagin_a_binary_image_convex_hull/all/include/ops_all.hpp"
-#include "kamalagin_a_binary_image_convex_hull/common/include/common.hpp"
-#include "kamalagin_a_binary_image_convex_hull/omp/include/ops_omp.hpp"
-#include "kamalagin_a_binary_image_convex_hull/seq/include/ops_seq.hpp"
-#include "kamalagin_a_binary_image_convex_hull/stl/include/ops_stl.hpp"
-#include "kamalagin_a_binary_image_convex_hull/tbb/include/ops_tbb.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/all/include/ops_all.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/common/include/common.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/omp/include/ops_omp.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/seq/include/ops_seq.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/stl/include/ops_stl.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/tbb/include/ops_tbb.hpp"
 #include "performance/include/performance.hpp"
 #include "util/include/perf_test_util.hpp"
 
-namespace kamalagin_a_binary_image_convex_hull {
+namespace kamalagin_a_binary_image_convex_hull_2 {
 
 namespace {
 
@@ -70,9 +70,10 @@ TEST_P(KamalaginRunPerfTests, RunPerfModes) {
 namespace {
 
 const auto kAllPerfTasks =
-    ppc::util::MakeAllPerfTasks<InType, KamalaginABinaryImageConvexHullSEQ, KamalaginABinaryImageConvexHullOMP,
-                                KamalaginABinaryImageConvexHullTBB, KamalaginABinaryImageConvexHullSTL,
-                                KamalaginABinaryImageConvexHullALL>(PPC_SETTINGS_kamalagin_a_binary_image_convex_hull);
+    ppc::util::MakeAllPerfTasks<InType, KamalaginABinaryImageConvexHull2SEQ, KamalaginABinaryImageConvexHull2OMP,
+                                KamalaginABinaryImageConvexHull2TBB, KamalaginABinaryImageConvexHull2STL,
+                                KamalaginABinaryImageConvexHull2ALL>(
+        PPC_SETTINGS_kamalagin_a_binary_image_convex_hull_2);
 
 const auto kGtestValues = ppc::util::TupleToGTestValues(kAllPerfTasks);
 const auto kPerfTestName = KamalaginRunPerfTests::CustomPerfTestName;
@@ -81,4 +82,4 @@ INSTANTIATE_TEST_SUITE_P(RunModeTests, KamalaginRunPerfTests, kGtestValues, kPer
 
 }  // namespace
 
-}  // namespace kamalagin_a_binary_image_convex_hull
+}  // namespace kamalagin_a_binary_image_convex_hull_2

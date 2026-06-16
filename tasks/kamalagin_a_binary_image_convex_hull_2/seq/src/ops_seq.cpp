@@ -1,4 +1,4 @@
-#include "kamalagin_a_binary_image_convex_hull/seq/include/ops_seq.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/seq/include/ops_seq.hpp"
 
 #include <algorithm>
 #include <array>
@@ -7,9 +7,9 @@
 #include <utility>
 #include <vector>
 
-#include "kamalagin_a_binary_image_convex_hull/common/include/common.hpp"
+#include "kamalagin_a_binary_image_convex_hull_2/common/include/common.hpp"
 
-namespace kamalagin_a_binary_image_convex_hull {
+namespace kamalagin_a_binary_image_convex_hull_2 {
 
 namespace {
 
@@ -141,13 +141,13 @@ void RunBinaryImageConvexHullSeq(const BinaryImage &img, HullList &hulls) {
 
 }  // namespace
 
-KamalaginABinaryImageConvexHullSEQ::KamalaginABinaryImageConvexHullSEQ(const InType &in) {
+KamalaginABinaryImageConvexHull2SEQ::KamalaginABinaryImageConvexHull2SEQ(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   GetInput() = in;
   GetOutput() = HullList{};
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::ValidationImpl() {
+bool KamalaginABinaryImageConvexHull2SEQ::ValidationImpl() {
   const auto &img = GetInput();
   if (img.rows < 0 || img.cols < 0) {
     return false;
@@ -161,18 +161,18 @@ bool KamalaginABinaryImageConvexHullSEQ::ValidationImpl() {
   return (static_cast<size_t>(img.rows) * static_cast<size_t>(img.cols)) == img.data.size();
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::PreProcessingImpl() {
+bool KamalaginABinaryImageConvexHull2SEQ::PreProcessingImpl() {
   GetOutput().clear();
   return true;
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::RunImpl() {
+bool KamalaginABinaryImageConvexHull2SEQ::RunImpl() {
   RunBinaryImageConvexHullSeq(GetInput(), GetOutput());
   return true;
 }
 
-bool KamalaginABinaryImageConvexHullSEQ::PostProcessingImpl() {
+bool KamalaginABinaryImageConvexHull2SEQ::PostProcessingImpl() {
   return true;
 }
 
-}  // namespace kamalagin_a_binary_image_convex_hull
+}  // namespace kamalagin_a_binary_image_convex_hull_2
